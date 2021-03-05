@@ -1,0 +1,117 @@
+/* Set Open Sans Font*/
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+}
+text {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  color: #eff9fb;
+}
+
+.headerGrid {
+  width: 100vw;
+  height: 40px;
+  background-color: #3c5a68;
+}
+
+.headText {
+  position: relative;
+  top: 25px;
+  left: 40px;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: xx-large;
+  color: #eff9fb;
+}
+
+.labelHead {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: xx-large;
+  color: #3c5a68;
+}
+
+.sampleData {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: large;
+  color: #3c5a68;
+}
+
+.sampleTray > img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.sampleGrid {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 60vw 30vw;
+  grid-template-rows: 70vh;
+  width: 100vw;
+  height: 100vh;
+  padding: auto;
+  padding-top: 5vh;
+  grid-gap: 5vw;
+  background-color: #3c5a68;
+}
+
+.labels {
+  position: relative;
+}
+
+.sampleGrid > .sampleTray {
+  background-color: #eff9fb;
+  padding: 10px;
+  max-height: min-content;
+  max-width: fit-content;
+}
+
+.sampleGrid > .labels {
+  background-color: #eff9fb;
+  padding: 20px;
+}
+
+.submitChoice {
+  background-color: #70ae6e;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: medium;
+  color: #eff9fb;
+
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+
+  width: 224px;
+  height: 56px;
+  padding: 16px;
+  border: none;
+}
+
+.skipChoice {
+  background-color: #e9806e;
+
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: medium;
+  color: #eff9fb;
+
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+
+  width: 224px;
+  height: 56px;
+  padding: 16px;
+  border: none;
+}
