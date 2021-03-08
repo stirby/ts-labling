@@ -15,7 +15,10 @@ interface Props {
 }
 
 interface CompleteRequest {
-  carLabel: string;
+  precipitation: string;
+  congestionNorth: string;
+  congestionSouth: string;
+  artifact: string;
   imageID: string;
 }
 
@@ -81,7 +84,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const msg: CompleteRequest = JSON.parse(data);
 
     // Check for incomplete labels
-    if (msg.carLabel == "") {
+    if (msg.precipitation === "" || msg.artifact === "" || msg.congestionNorth === "" || msg.congestionSouth === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
         "Missing Labels: 'carLabel' - Please complete before submitting."
@@ -94,7 +97,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const query = await collection.findOneAndUpdate(
       { box_id: msg.imageID },
       {
-        $set: { review: "complete", "labels.has_cars": msg.carLabel == "true" },
+        $set: { review: "complete", 
+                "labels.artifact": msg.artifact,
+                "labels.congestion.north": msg.congestionNorth,
+                "labels.congestion.south": msg.congestionSouth, 
+                "labels.precipitation": msg.precipitation},
       },
       { upsert: false }
     );
@@ -157,26 +164,29 @@ const Index: React.FC<Props> = (props) => {
   // Holds state as to whether the client is currently submitting a sample to the server
   const [status, setStatus] = React.useState("");
 
-
   //* Label States
   // Holds state for the sample's "has_Cars" label
-  const [precipValue, setPrecip] = React.useState(""),
-        [artifactValue, setArtifact] = React.useState(""),
-        [congestionValue, setCongestion] = React.useState("");
+  const [precipitation, setPrecip] = React.useState(""),
+        [artifact, setArtifact] = React.useState(""),
+        [congestionNorth, setCongestNorth] = React.useState(""),
+        [congestionSouth, setCongestSouth] = React.useState("");
+        
+
 
   // Submits to `/`... aka getServerSideProps then
   // routes inside the POST block.
   const submit = () => {
     setSubmitting(true);
 
-    if (carLabel == "") {
+    if (precipitation === "" || artifact === "" || congestionNorth === "" || congestionSouth === "") {
       console.log("Submission falied, incomplete labels.");
     }
 
-    console.log("Submitting Value:", carLabel, "isNull:", carLabel == "");
-
     const request: CompleteRequest = {
-      carLabel: carLabel,
+      precipitation: precipitation,
+      artifact: artifact,
+      congestionNorth: congestionNorth,
+      congestionSouth: congestionSouth,
       imageID: props.imageID,
     };
 
@@ -241,28 +251,35 @@ const Index: React.FC<Props> = (props) => {
             <text className="labelHead">Label Fields</text>
             <Radios
               title="Congestion - North"
-              options={["true", "false"]}
+              options={labelSet.congestion}
               onChange={(value) => {
-                setCarLabel(value);
+                setCongestNorth(value);
               }}
             ></Radios>
 
             <Radios
               title="Congestion - South"
-              options={["Congested", "Not Congested",]}
+              options={labelSet.congestion}
               onChange={(value) => {
-                setCarLabel(value);
+                setCongestSouth(value);
               }}
             ></Radios>
 
             <Radios
               title="Precipitation"
-              options={["clear", "rain", "snow", "fog"]}
+              options={labelSet.precipitation}
               onChange={(value) => {
-                SetPrecipLabel(value);
+                setPrecip(value);
               }}
             ></Radios>
 
+            <Radios
+              title="Artifact"
+              options={labelSet.artifact}
+              onChange={(value) => {
+                setArtifact(value);
+              }}
+            ></Radios>
 
             <button
               className="submitChoice"
