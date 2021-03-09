@@ -35,17 +35,19 @@ text {
   color: #3c5a68;
 }
 
-.sampleData {
+.sampleInfo {
   font-family: "Open Sans", sans-serif;
   font-weight: 300;
-  font-size: large;
+  font-size: xx-large;
   color: #3c5a68;
+
+  position: relative;
+  bottom: -20px;
+  left: 0px;
 }
 
 .sampleTray > img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
   width: auto;
   height: auto;
   max-width: 100%;
@@ -57,7 +59,7 @@ text {
   display: grid;
   justify-content: center;
   grid-template-columns: 60vw 30vw;
-  grid-template-rows: 70vh 10vh;
+  grid-template-rows: 80vh;
   width: 100vw;
   height: 100vh;
   padding: auto;
@@ -74,15 +76,15 @@ text {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 90%;
-  height: 82px;
+  width: 95%;
+  height: 80px;
   border-bottom: 1px solid #598397;
 }
 
 .radioTitle {
   color: #3c5a68;
   font-family: "Open Sans", sans-serif;
-  font-weight: 600;
+  font-weight: 300;
   font-size: x-large;
   position: relative;
   top: 30px;
@@ -96,14 +98,15 @@ text {
   font-size: x-large;
   position: relative;
   float: right;
-  margin: 10px;
   margin-top: 30px;
+  margin-left: 10px;
 }
 
 .sampleGrid > .sampleTray {
   background-color: #eff9fb;
   padding: 10px;
-  max-height: min-content;
+  display: inline-block;
+  max-height: fit-content;
   max-width: fit-content;
 }
 
@@ -112,41 +115,78 @@ text {
   padding: 20px;
 }
 
+.navigationButtons {
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  width: 90%;
+  height: 180px;
+}
+
 .submitChoice {
   background-color: #70ae6e;
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
-  font-size: medium;
+  font-size: large;
   color: #eff9fb;
 
   position: absolute;
-  bottom: 30px;
-  right: 30px;
+  top: 30px;
+  right: 0px;
 
-  width: 224px;
+  width: calc(50% - 10px);
   height: 56px;
   padding: 16px;
   border: none;
 }
+.submitChoice:hover {
+  background-color: #40943d;
+}
+
 
 .skipChoice {
   background-color: #CF995F;
 
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
-  font-size: medium;
+  font-size: large;
   color: #eff9fb;
 
   position: absolute;
-  bottom: 30px;
-  left: 30px;
+  top: 30px;
+  left: 0px;
 
-  width: 224px;
+  width: calc(50% - 10px);
   height: 56px;
   padding: 16px;
   border: none;
 }
+.skipChoice:hover {
+  background-color: #ac7337;
+}
 
+.obstructed {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-size: x-large;
+  background-color: #e9806e;
+  font-weight: 500;
+  font-size: large;
+  color: #eff9fb;
+  
+  position: absolute;
+  bottom: 20px;
+  
+  width: 100%;
+  height: 56px;
+  padding: 8px;
+  border: none;
+}
+.obstructed:hover {
+  background-color: #b94e3b;
+}
 
 .err {
   font-family: "Open Sans", sans-serif;
@@ -169,3 +209,5 @@ text {
   bottom: 30px;
   right: 30px;
 }
+
+

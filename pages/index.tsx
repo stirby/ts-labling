@@ -1,12 +1,9 @@
 import React from "react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import { MongoClient } from "mongodb";
 import * as BoxSDK from "box-node-sdk";
 
-import { prependOnceListener } from "node:process";
-import { type } from "os";
 
 interface Props {
   imageID: string;
@@ -16,25 +13,28 @@ interface Props {
 
 interface CompleteRequest {
   precipitation: string;
-  congestionNorth: string;
-  congestionSouth: string;
-  artifact: string;
+  congestion: {
+    left: string;
+    center: string;
+    right: string;
+  }
+  reviewer: string;
   imageID: string;
+  obstructed: boolean;
 }
+
+
 
 // Label range reference
 const labelSet = {
-  
   // Applied to north and south selection. Only one may be selected.
-  congestion: ["congested", "non-congested", "unclear"],
+  congestion: ["unclear", "congested", "vacant"],
 
   // Precipitation artifact, fog can be general only one may be selected. 
   precipitation: ["rain", "snow", "fog", "clear"],
 
-  // Position artifact refers to photos where the camera aimed toward the highway.
-  // Lens referring to glare, obstruction
-  // environment referring to some physical anomaly to be inspected. 
-  artifact: ["position", "lens", "environment", "no-artifact"]
+  // Placeholder, needs to be text input that doesn't refresh for the client on submission
+  reviewer: ["UA", "ALDOT"]
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -52,6 +52,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     );
   }
 
+  // Establish Mongo
   const client = await MongoClient.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -64,8 +65,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   // Labels submitted by user
   if (ctx.req.method === "POST") {
-    // We return empty props here just to fufill the func...
-    // The request ends above.
+    // Prepare empty response to fufill func signature
     const emptyResponse = {
       props: {
         imageID: "",
@@ -83,8 +83,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     });
     const msg: CompleteRequest = JSON.parse(data);
 
+    if (msg.obstructed) {
+      // Sample marked as obstructed, 
+      await collection.findOneAndUpdate(
+        { box_id: msg.imageID },
+        {
+          $set: { obstructed: true },
+        },
+        { upsert: false }
+      );
+      ctx.res.writeHead(200);
+      ctx.res.write("Successfully marked sample as obstructed, Thank you.");
+      ctx.res.end();
+    }
+
     // Check for incomplete labels
-    if (msg.precipitation === "" || msg.artifact === "" || msg.congestionNorth === "" || msg.congestionSouth === "") {
+    if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
         "Missing Labels: 'carLabel' - Please complete before submitting."
@@ -94,20 +108,20 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     }
 
     // Update Sample in DB
-    const query = await collection.findOneAndUpdate(
+    await collection.findOneAndUpdate(
       { box_id: msg.imageID },
       {
-        $set: { review: "complete", 
-                "labels.artifact": msg.artifact,
-                "labels.congestion.north": msg.congestionNorth,
-                "labels.congestion.south": msg.congestionSouth, 
+        $set: { reviewer: msg.reviewer, 
+                "labels.congestion.leftLane": msg.congestion.left,
+                "labels.congestion.centerLane": msg.congestion.center, 
+                "labels.congestion.rightLane": msg.congestion.right, 
                 "labels.precipitation": msg.precipitation},
       },
       { upsert: false }
     );
 
     ctx.res.writeHead(200);
-    ctx.res.write("Successful Submission, Thank you :)");
+    ctx.res.write("Successful Submission, Thank you.");
     ctx.res.end();
     return emptyResponse;
   }
@@ -131,7 +145,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   // Pull random sample from mongoDB
   const result = await collection
-    .aggregate([{ $match: { review: null } }, { $sample: { size: 1 } }])
+    .aggregate([{ $match: { reviewer: null } }, { $sample: { size: 1 } }])
     .toArray();
 
   // Set box id
@@ -158,7 +172,7 @@ const Index: React.FC<Props> = (props) => {
   // Holds state as to whether the app is submitting a request or not.
   const [submitting, setSubmitting] = React.useState(false);
 
-  // Holds state as to whether the app recieved an error from an API request.
+  // Holds state as to whether the app recieved aorthn error from an API request.
   const [error, setError] = React.useState("");
 
   // Holds state as to whether the client is currently submitting a sample to the server
@@ -167,9 +181,10 @@ const Index: React.FC<Props> = (props) => {
   //* Label States
   // Holds state for the sample's "has_Cars" label
   const [precipitation, setPrecip] = React.useState(""),
-        [artifact, setArtifact] = React.useState(""),
-        [congestionNorth, setCongestNorth] = React.useState(""),
-        [congestionSouth, setCongestSouth] = React.useState("");
+        [congestionLeft, setCongestLeft] = React.useState(""),
+        [congestionCenter, setCongestCenter] = React.useState(""),
+        [congestionRight, setCongestRight] = React.useState(""),
+        [reviewer, setReviewer] = React.useState("");
         
 
 
@@ -178,15 +193,16 @@ const Index: React.FC<Props> = (props) => {
   const submit = () => {
     setSubmitting(true);
 
-    if (precipitation === "" || artifact === "" || congestionNorth === "" || congestionSouth === "") {
-      console.log("Submission falied, incomplete labels.");
-    }
 
     const request: CompleteRequest = {
       precipitation: precipitation,
-      artifact: artifact,
-      congestionNorth: congestionNorth,
-      congestionSouth: congestionSouth,
+      congestion: {
+        left: congestionLeft,
+        center: congestionCenter,
+        right: congestionRight,
+      },
+      obstructed: false,
+      reviewer: reviewer,
       imageID: props.imageID,
     };
 
@@ -212,8 +228,44 @@ const Index: React.FC<Props> = (props) => {
       });
   };
 
+  // Optionally generate a new sample
   const newSample = () =>{
     window.location.reload()
+  }
+
+
+  // Sample is obstructed
+  const obstructed = () => {
+    setSubmitting(true);
+
+    const request: CompleteRequest = {
+      precipitation: "",
+      congestion: { left: "", center: "", right: "", },
+      obstructed: true,
+      reviewer: "",
+      imageID: "",
+    };
+
+    fetch("/", {
+      body: JSON.stringify(request),
+      method: "POST",
+    })
+      .then(async (response) => {
+        if (response.status === 500) {
+          setError(await response.text());
+          setSubmitting(false);
+          return;
+        } else if (response.status === 200) {
+          // Success Message Display
+          setError("");
+          setStatus(await response.text())
+        }
+        window.location.reload();
+      })
+      .catch((ex) => {
+        setError(ex.toString());
+        setSubmitting(false);
+      });
   }
 
   return (
@@ -223,12 +275,6 @@ const Index: React.FC<Props> = (props) => {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <style global jsx>{`
-        body {
-          font-family: "Cabin", sans-serif;
-        }
-      `}</style>
-
       <body>
         <div className="headerGrid">
           <text className="headText">TrafficNet - Labeling Interface</text>
@@ -237,36 +283,45 @@ const Index: React.FC<Props> = (props) => {
         <div className="sampleGrid">
           <div className="sampleTray">
             <img src={props.imageContent} alt={props.imageID} />
+            <text className="sampleInfo">Image ID: {props.imageID}</text><br></br>
+            
           </div>
 
           <div className="labels">
-            <text className="labelHead">Active Sample</text>
-            <ul>
-              <li className="sampleData">ID: {props.imageID}</li>
-              <li className="sampleData">File: {props.imageName}</li>
-            </ul>
+            
+            <text className="labelHead">Congestion Labels</text><br></br>
+              <Radios
+                title="Left Lane"
+                default="vacant"
+                options={labelSet.congestion}
+                onChange={(value) => {
+                  setCongestLeft(value);
+                }}
+              ></Radios>
+
+              <Radios
+                title="Center Lane"
+                default="vacant"
+                options={labelSet.congestion}
+                onChange={(value) => {
+                  setCongestCenter(value);
+                }}
+              ></Radios>
+
+              <Radios
+                title="Right Lane"
+                default="vacant"
+                options={labelSet.congestion}
+                onChange={(value) => {
+                  setCongestRight(value);
+                }}
+              ></Radios>
 
             <br></br>
-
-            <text className="labelHead">Label Fields</text>
-            <Radios
-              title="Congestion - North"
-              options={labelSet.congestion}
-              onChange={(value) => {
-                setCongestNorth(value);
-              }}
-            ></Radios>
-
-            <Radios
-              title="Congestion - South"
-              options={labelSet.congestion}
-              onChange={(value) => {
-                setCongestSouth(value);
-              }}
-            ></Radios>
-
+            <text className="labelHead">Enviroment Labels</text><br></br>
             <Radios
               title="Precipitation"
+              default="clear"
               options={labelSet.precipitation}
               onChange={(value) => {
                 setPrecip(value);
@@ -274,24 +329,31 @@ const Index: React.FC<Props> = (props) => {
             ></Radios>
 
             <Radios
-              title="Artifact"
-              options={labelSet.artifact}
+              title="Reviewer"
+              default=""
+              options={labelSet.reviewer}
               onChange={(value) => {
-                setArtifact(value);
+                setReviewer(value);
               }}
             ></Radios>
 
-            <button
-              className="submitChoice"
-              disabled={submitting}
-              onClick={submit}
-            >
-              Submit
-            </button>
-            <button className="skipChoice" disabled={submitting} onClick={newSample}>
-              New Sample
-            </button>
+            <div className="navigationButtons">
+              <button
+                className="submitChoice"
+                disabled={submitting}
+                onClick={submit}
+              >
+                Submit
+              </button>
+              
+              <button className="skipChoice" disabled={submitting} onClick={newSample}>
+                New Sample
+              </button>
 
+              <button className="obstructed" disabled={submitting} onClick={obstructed}>
+                Mark Obstructed
+              </button>
+            </div>
 
           </div>
           <text className="err">{error}</text>
@@ -307,16 +369,22 @@ const Index: React.FC<Props> = (props) => {
 
 export default Index;
 
-/* React Functional Component
-* Creates a renderable custom react component
+/* 
+* Radios - React Functional Component
+* Creates a renderable custom radio element
 *
+* title: String to title this radio selection
+* defualt: default selected option 
+* options: list of string choices
+* onChange: Callback for selection event. 
 */
 const Radios: React.FC<{
   title: string;
+  default: string;
   options: string[];
   onChange: (value: string) => void;
 }> = (props) => {
-  const [selectedValue, setSelectedValue] = React.useState("");
+  const [selectedValue, setSelectedValue] = React.useState(props.default);
 
   return (
     <div className="radioBox">
@@ -328,6 +396,7 @@ const Radios: React.FC<{
               <input
                 type="radio"
                 name={props.title}
+                id={props.title}
                 value={value}
                 checked={value == selectedValue}
                 onChange={(event) => {
