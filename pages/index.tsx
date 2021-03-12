@@ -4,6 +4,9 @@ import Head from "next/head";
 import { MongoClient } from "mongodb";
 import * as BoxSDK from "box-node-sdk";
 
+// From Material UI
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 interface Props {
   imageID: string;
@@ -34,7 +37,24 @@ const labelSet = {
   precipitation: ["rain", "snow", "fog", "clear"],
 
   // Placeholder, needs to be text input that doesn't refresh for the client on submission
-  reviewer: ["UA", "ALDOT"]
+  reviewer: ["DCSL", "ALDOT"]
+}
+
+// Tooltips for each label selection
+const tooltipText = {
+  // Congestion - Left Lane
+  congestion: {
+    leftLane: "Left lane congestion on the eastbound highway. If the condition of the lane is unclear, mark it as such.",
+    rightLane: "Right lane congestion on the eastbound highway. If the condition of the lane is unclear, mark it as such.",
+    centerLane: "Center lane congestion on the eastbound highway. If the condition of the lane is unclear, mark it as such."
+  },
+  precipitation: "Indicate any precipitation that appears in the active image.",
+  reviewer: "Your workplace, to maintain consistency and accuracy.",
+
+  // Button Tooltips
+  obstructed: "Use this to mark images that are unusable for classification, whether the camera is angled in the wrong direction or some obstacle blocks the view. Once clicked, the image will be ’tossed out,’ and a new image will be drawn.",
+  submit: "Applies all currently selected labels to the active image, saves it to the database, and draws a new image for labeling.",
+  newSample: "Simply draws a random image from the database and restores all label options to their default selection."
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -109,8 +129,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
     // Update Sample in DB
     await collection.findOneAndUpdate(
-      { box_id: msg.imageID },
-      {
+      { box_id: msg.imageID }, // Query
+      { // Label updates
         $set: { reviewer: msg.reviewer, 
                 "labels.congestion.leftLane": msg.congestion.left,
                 "labels.congestion.centerLane": msg.congestion.center, 
@@ -290,17 +310,24 @@ const Index: React.FC<Props> = (props) => {
           <div className="labels">
             
             <text className="labelHead">Congestion Labels</text><br></br>
-              <Radios
-                title="Left Lane"
-                default="vacant"
-                options={labelSet.congestion}
-                onChange={(value) => {
-                  setCongestLeft(value);
-                }}
-              ></Radios>
+              
+            
+              <div>
+                <Radios
+                  labelTitle="Left Lane"
+                  tooltip={tooltipText.congestion.leftLane}
+                  default="vacant"
+                  options={labelSet.congestion}
+                  onChange={(value) => {
+                    setCongestLeft(value);
+                  }}
+                ></Radios>
+              </div>
+
 
               <Radios
-                title="Center Lane"
+                labelTitle="Center Lane"
+                tooltip={tooltipText.congestion.centerLane}
                 default="vacant"
                 options={labelSet.congestion}
                 onChange={(value) => {
@@ -309,7 +336,8 @@ const Index: React.FC<Props> = (props) => {
               ></Radios>
 
               <Radios
-                title="Right Lane"
+                labelTitle="Right Lane"
+                tooltip={tooltipText.congestion.rightLane}
                 default="vacant"
                 options={labelSet.congestion}
                 onChange={(value) => {
@@ -320,7 +348,8 @@ const Index: React.FC<Props> = (props) => {
             <br></br>
             <text className="labelHead">Enviroment Labels</text><br></br>
             <Radios
-              title="Precipitation"
+              labelTitle="Precipitation"
+              tooltip={tooltipText.precipitation}
               default="clear"
               options={labelSet.precipitation}
               onChange={(value) => {
@@ -329,7 +358,8 @@ const Index: React.FC<Props> = (props) => {
             ></Radios>
 
             <Radios
-              title="Reviewer"
+              labelTitle="Reviewer"
+              tooltip={tooltipText.reviewer}
               default=""
               options={labelSet.reviewer}
               onChange={(value) => {
@@ -338,6 +368,7 @@ const Index: React.FC<Props> = (props) => {
             ></Radios>
 
             <div className="navigationButtons">
+              <LightTooltip title={tooltipText.submit}>
               <button
                 className="submitChoice"
                 disabled={submitting}
@@ -345,14 +376,19 @@ const Index: React.FC<Props> = (props) => {
               >
                 Submit
               </button>
-              
+              </LightTooltip>
+
+              <LightTooltip title={tooltipText.submit}>
               <button className="skipChoice" disabled={submitting} onClick={newSample}>
                 New Sample
               </button>
+              </LightTooltip>
 
+              <LightTooltip title={tooltipText.obstructed}>
               <button className="obstructed" disabled={submitting} onClick={obstructed}>
                 Mark Obstructed
               </button>
+              </LightTooltip>
             </div>
 
           </div>
@@ -379,7 +415,8 @@ export default Index;
 * onChange: Callback for selection event. 
 */
 const Radios: React.FC<{
-  title: string;
+  labelTitle: string;
+  tooltip: string;
   default: string;
   options: string[];
   onChange: (value: string) => void;
@@ -387,29 +424,45 @@ const Radios: React.FC<{
   const [selectedValue, setSelectedValue] = React.useState(props.default);
 
   return (
+    <LightTooltip title={props.tooltip}>
     <div className="radioBox">
-      <text className="radioTitle">{props.title}</text>
+      <text className="radioTitle">{props.labelTitle}</text>
       {props.options.map((value: string) => {
         return (
           <React.Fragment key={value}>
-            <div className="radioOpt">
-              <input
-                type="radio"
-                name={props.title}
-                id={props.title}
-                value={value}
-                checked={value == selectedValue}
-                onChange={(event) => {
-                  console.log("Updated Label '" + props.title + "' to:", value);
-                  setSelectedValue(event.target.value);
-                  props.onChange(event.target.value);
-                }}
-              />
-              <label>{value}</label>
-            </div>
+            
+              <div className="radioOpt">
+                <input
+                  type="radio"
+                  name={props.labelTitle}
+                  id={props.labelTitle}
+                  value={value}
+                  checked={value == selectedValue}
+                  onChange={(event) => {
+                    console.log("Updated Label '" + props.labelTitle + "' to:", value);
+                    setSelectedValue(event.target.value);
+                    props.onChange(event.target.value);
+                  }}
+                />
+                <label>{value}</label>
+              </div>
           </React.Fragment>
         );
       })}
     </div>
+    </LightTooltip>
   );
 };
+
+/* From Google's Material UI: https://material-ui.com/components/tooltips/
+*
+*
+*/
+const LightTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 16,
+  },
+}))(Tooltip);
