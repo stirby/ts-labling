@@ -14,7 +14,7 @@ text {
 
 .headerGrid {
   width: 100vw;
-  height: 40px;
+  height: 80px;
   background-color: #3c5a68;
 }
 
@@ -26,6 +26,33 @@ text {
   font-weight: 300;
   font-size: xx-large;
   color: #eff9fb;
+}
+
+
+.nav {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: xx-large;
+  color: #eff9fb;
+  position: absolute;
+  top: 25px;
+}
+
+.home {
+  right: 400px;
+}
+
+.dcsl {
+  right: 250px;
+}
+
+.aldot {
+  right: 100px;
+}
+
+.activePage {
+  font-weight: 700;
+  color: #70ae6e;
 }
 
 .labelHead {
@@ -62,8 +89,6 @@ text {
   grid-template-rows: 80vh;
   width: 100vw;
   height: 100vh;
-  padding: auto;
-  padding-top: 5vh;
   grid-gap: 5vw;
   background-color: #3c5a68;
 }

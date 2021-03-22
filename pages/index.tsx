@@ -6,7 +6,10 @@ import * as BoxSDK from "box-node-sdk";
 
 // From Material UI
 import Tooltip from '@material-ui/core/Tooltip';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+
+// Local Components
+import HeaderBar from '../src/HeaderBar';
 
 interface Props {
   imageID: string;
@@ -58,6 +61,9 @@ const tooltipText = {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
+
+  console.log(process.env.BOX_CONFIG)
+
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
     throw new Error(
@@ -148,7 +154,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   // Set up box folder
   const boxConfig = JSON.parse(
-    Buffer.from(process.env.BOX_CONFIG, "base64").toString()
+    Buffer.from(process.env.BOX_CONFIG!, "base64").toString()
   );
   console.log("- Box: Loaded Client Configuration.");
   const boxClient = await BoxSDK.getPreconfiguredInstance(
@@ -176,7 +182,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const stream = await boxClient.files.getReadStream(imgProps.imageID);
   const data = await new Promise<Buffer>((resolve, reject) => {
     const d: Uint8Array[] = [];
-    stream.on("data", (c) => d.push(c));
+    stream.on("data", (c: Uint8Array) => d.push(c));
     stream.on("end", () => resolve(Buffer.concat(d)));
     stream.on("error", () => reject());
   });
@@ -206,8 +212,6 @@ const Index: React.FC<Props> = (props) => {
         [congestionRight, setCongestRight] = React.useState(""),
         [reviewer, setReviewer] = React.useState("");
         
-
-
   // Submits to `/`... aka getServerSideProps then
   // routes inside the POST block.
   const submit = () => {
@@ -296,9 +300,8 @@ const Index: React.FC<Props> = (props) => {
       </Head>
 
       <body>
-        <div className="headerGrid">
-          <text className="headText">TrafficNet - Labeling Interface</text>
-        </div>
+        <HeaderBar
+        activePage="home"></HeaderBar>
 
         <div className="sampleGrid">
           <div className="sampleTray">
