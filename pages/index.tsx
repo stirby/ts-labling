@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 
 // Local Components
-import HeaderBar from '../src/HeaderBar';
+import HeaderBar from '../components/HeaderBar';
 
 interface Props {
   imageID: string;
@@ -174,6 +174,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     .aggregate([{ $match: { reviewer: null } }, { $sample: { size: 1 } }])
     .toArray();
 
+    console.log(result)
+
   // Set box id
   imgProps.imageID = result[0].box_id;
   imgProps.imageName = result[0].name;
@@ -212,7 +214,7 @@ const Index: React.FC<Props> = (props) => {
         [congestionRight, setCongestRight] = React.useState(""),
         [reviewer, setReviewer] = React.useState("");
         
-        
+
   // Submits to `/`... aka getServerSideProps then
   // routes inside the POST block.
   const submit = () => {

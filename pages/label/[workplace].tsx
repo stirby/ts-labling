@@ -4,7 +4,7 @@ import { GetServerSideProps } from "next";
 import { ConnectMongo } from "../../src/database";
 import * as BoxSDK from "box-node-sdk";
 
-import Labeler from "../../src/Labeler";
+import Labeler from "../../components/Labeler";
 
 // Server Props
 interface Props {

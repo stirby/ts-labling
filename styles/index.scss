@@ -13,19 +13,32 @@ text {
 }
 
 .headerGrid {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 60vw 30vw;
+  grid-gap: 5vw;
   width: 100vw;
   height: 80px;
   background-color: #3c5a68;
 }
 
+.navBox {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 30% 30% 30%;
+  grid-gap: 5%;
+
+  text-align: center;
+}
+
+
 .headText {
-  position: relative;
-  top: 25px;
-  left: 40px;
   font-family: "Open Sans", sans-serif;
   font-weight: 300;
   font-size: xx-large;
   color: #eff9fb;
+  display: inline-block;
+  padding-top: 20px;
 }
 
 
@@ -34,25 +47,20 @@ text {
   font-weight: 300;
   font-size: xx-large;
   color: #eff9fb;
-  position: absolute;
-  top: 25px;
+  display: inline-block;
+  padding-top: 20px;
+  padding-left: auto;
+  padding-right: auto;
+  text-decoration: none;
 }
 
-.home {
-  right: 400px;
-}
-
-.dcsl {
-  right: 250px;
-}
-
-.aldot {
-  right: 100px;
+.nav:hover {
+  color: #b5f1fd;
 }
 
 .activePage {
   font-weight: 700;
-  color: #70ae6e;
+  text-decoration: underline;
 }
 
 .labelHead {
