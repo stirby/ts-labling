@@ -127,7 +127,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
-        "Missing Labels: 'carLabel' - Please complete before submitting."
+        "Missing Labels - Please complete before submitting."
       );
       ctx.res.end();
       return emptyResponse;
@@ -211,6 +211,7 @@ const Index: React.FC<Props> = (props) => {
         [congestionCenter, setCongestCenter] = React.useState(""),
         [congestionRight, setCongestRight] = React.useState(""),
         [reviewer, setReviewer] = React.useState("");
+        
         
   // Submits to `/`... aka getServerSideProps then
   // routes inside the POST block.
