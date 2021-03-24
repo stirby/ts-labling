@@ -21,11 +21,11 @@ const HeaderBar: React.FC<{
         <a className={classNames[0]}>Home</a>
       </Link>
 
-      <Link href="/label/DCSL">
+      <Link href="/label/dcsl">
         <a className={classNames[1]}>DCSL</a>
       </Link>
 
-      <Link href="/label/ALDOT">
+      <Link href="/label/aldot">
         <a className={classNames[2]}>ALDOT</a>
       </Link>
     </div>

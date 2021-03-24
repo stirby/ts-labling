@@ -63,6 +63,9 @@ interface CompleteRequest {
 
 // Page Delcaration
 const Labeler: React.FC<labelerProps> = (props) => {
+
+  const pagePath = "/label/"+props.activePage;
+
   // Holds state as to whether the app is submitting a request or not.
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -97,7 +100,7 @@ const Labeler: React.FC<labelerProps> = (props) => {
       imageID: props.imageID,
     };
 
-    fetch("/", {
+    fetch(pagePath, {
       body: JSON.stringify(request),
       method: "POST",
     })
@@ -136,7 +139,7 @@ const Labeler: React.FC<labelerProps> = (props) => {
       imageID: "",
     };
 
-    fetch("/", {
+    fetch(pagePath, {
       body: JSON.stringify(request),
       method: "POST",
     })

@@ -27,13 +27,13 @@ interface CompleteRequest {
   obstructed: boolean;
 }
 
-const validNames = ["DCSL", "ALDOT"];
+const validNames = ["dcsl", "aldot"];
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   let client = await ConnectMongo();
   let collection = client
     .db(process.env.MONGODB_DB)
-    .collection("testingSamples");
+    .collection("rawData");
 
   // Get workplace from context (url)
   const workplace = ctx.query.workplace as string;
