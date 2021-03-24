@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   });
 
   const db = client.db(mongoDB);
-  const collection = db.collection("testingSamples");
+  const collection = db.collection("rawData");
 
   console.log("Connected to MongoDB.");
 
