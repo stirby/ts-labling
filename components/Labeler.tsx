@@ -11,7 +11,7 @@ import { withStyles } from "@material-ui/core/styles";
 // Label range reference
 const labelSet = {
   // Applied to north and south selection. Only one may be selected.
-  congestion: ["unclear", "congested", "vacant"],
+  congestion: ["unclear", "congested", "non-congested"], //! DO NOT CHANGE ORDERING, USED TO INDEX
 
   // Precipitation artifact, fog can be general only one may be selected.
   precipitation: ["rain", "snow", "fog", "clear"],
@@ -49,22 +49,22 @@ interface labelerProps {
   activePage: string;
 }
 
+// Labels should only be inserted as null when a label is "obstructed"
 interface CompleteRequest {
-  precipitation: string;
-  congestion: {
+  precipitation?: string;
+  congestion?: {
     left: string;
     center: string;
     right: string;
   };
-  reviewer: string;
-  imageID: string;
+  imageID?: string;
   obstructed: boolean;
+  reviewer: string;
 }
 
 // Page Delcaration
 const Labeler: React.FC<labelerProps> = (props) => {
-
-  const pagePath = "/label/"+props.activePage;
+  const pagePath = "/label/" + props.activePage;
 
   // Holds state as to whether the app is submitting a request or not.
   const [submitting, setSubmitting] = React.useState(false);
@@ -132,11 +132,8 @@ const Labeler: React.FC<labelerProps> = (props) => {
     setSubmitting(true);
 
     const request: CompleteRequest = {
-      precipitation: "",
-      congestion: { left: "", center: "", right: "" },
       obstructed: true,
-      reviewer: "",
-      imageID: "",
+      reviewer: reviewer,
     };
 
     fetch(pagePath, {

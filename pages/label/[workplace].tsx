@@ -76,6 +76,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       ctx.res.writeHead(200);
       ctx.res.write("Successfully marked sample as obstructed, Thank you.");
       ctx.res.end();
+      return emptyResponse;
     }
 
     // Check for incomplete labels
@@ -97,9 +98,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       {
         $set: {
           reviewer: msg.reviewer,
-          "labels.congestion.leftLane": msg.congestion.left,
-          "labels.congestion.centerLane": msg.congestion.center,
-          "labels.congestion.rightLane": msg.congestion.right,
+          "labels.congestion.left": msg.congestion.left,
+          "labels.congestion.center": msg.congestion.center,
+          "labels.congestion.right": msg.congestion.right,
           "labels.precipitation": msg.precipitation,
         },
       },

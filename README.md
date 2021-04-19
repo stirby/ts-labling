@@ -11,6 +11,17 @@ The goal of this web application is to enable our Deep Learning Research lab and
 
 This is done by using a Box App to pull images from UA's domain, pump them to your browser, and save selected labels in a [MongoDB Atlas](www.mongodb.com/cloud/atlas) cluster. This app was written in [Typescript](https://www.typescriptlang.org/) using [NextJS](https://nextjs.org/) and deployed with [Vercel](vercel.com/). 
 
+
+## Database Notes
+
+### Congestion Labels: 
+Labels for each lane are keyed by integers:
+- 0 = Unclear (Can't determine from photo)
+- 1 = Congested 
+- 2 = Not-Congested
+
+This is done to enable changes to the strings they represent in the future, and reduce occupation of the DB.
+
 ---
 
 ## Credit
