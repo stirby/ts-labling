@@ -34,7 +34,7 @@ interface CompleteRequest {
 // Label range reference
 const labelSet = {
   // Applied to north and south selection. Only one may be selected.
-  congestion: ["unclear", "congested", "vacant"],
+  congestion: ["unclear", "congested", "non-congested"],
 
   // Precipitation artifact, fog can be general only one may be selected. 
   precipitation: ["rain", "snow", "fog", "clear"],
