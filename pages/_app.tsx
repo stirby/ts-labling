@@ -11,16 +11,19 @@ function MyApp({ Component, pageProps }) {
 
 MyApp.getInitialProps = async (appContext: AppContext) => {
 
-  const passkey = "tra";
+  // Valid password 
+  const passkey = process.env.PASSKEY;
 
+  // Get Cookie by label
   const cookieName = "authCookie";
-  
   const auth = appContext.ctx.req?.headers.authorization;
 
+  // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
   let password = cookies.get(cookieName) 
 
   if (auth) {
+    
     // Parse b64
     const login = Buffer.from(auth.split(" ")[1], "base64").toString("utf-8")
     const [_, pass] = login.split(":");
@@ -36,9 +39,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     appContext.ctx.res?.setHeader("WWW-Authenticate", "basic");
     (appContext.ctx.res as any).statusCode = 401;
     appContext.ctx.res?.end();
-    return
+    return {}
   } 
   return {}
 }
-
 export default MyApp;
