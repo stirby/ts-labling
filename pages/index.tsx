@@ -30,8 +30,6 @@ interface CompleteRequest {
   obstructed: boolean;
 }
 
-
-
 // Label range reference
 const labelSet = {
   // Applied to north and south selection. Only one may be selected.
