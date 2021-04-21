@@ -11,10 +11,14 @@ import { withStyles } from '@material-ui/core/styles';
 // Local Components
 import HeaderBar from '../components/HeaderBar';
 
+// Cookie reading
+import Cookies from "universal-cookie"
+
 interface Props {
   imageID: string;
   imageName: string;
   imageContent: string;
+  labelerID: string;
 }
 
 interface CompleteRequest {
@@ -61,9 +65,7 @@ const tooltipText = {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-
-  console.log(process.env.BOX_CONFIG)
-
+  
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
     throw new Error(
@@ -97,6 +99,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         imageID: "",
         imageName: "",
         imageContent: "",
+        labelerID: ""
       },
     };
 
@@ -162,19 +165,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   ).getAppAuthClient("user", process.env.BOX_USERKEY);
   console.log("- Box: Authenticated Client.");
 
+  const cookies = new Cookies(ctx.req?.headers.cookie)
+  const labelerID = cookies.get("authCookie").split("-")[1]
+
   // Pre-define sample image data
   var imgProps = {
     imageID: "",
     imageName: "",
     imageContent: "data:image/jpeg;base64, ", // Initialize with expected format for html to decode base64
+    labelerID: labelerID
   };
 
   // Pull random sample from mongoDB
   const result = await collection
     .aggregate([{ $match: { reviewer: null } }, { $sample: { size: 1 } }])
     .toArray();
-
-    console.log(result)
 
   // Set box id
   imgProps.imageID = result[0].box_id;
@@ -211,8 +216,7 @@ const Index: React.FC<Props> = (props) => {
   const [precipitation, setPrecip] = React.useState(""),
         [congestionLeft, setCongestLeft] = React.useState(""),
         [congestionCenter, setCongestCenter] = React.useState(""),
-        [congestionRight, setCongestRight] = React.useState(""),
-        [reviewer, setReviewer] = React.useState("");
+        [congestionRight, setCongestRight] = React.useState("");
         
 
   // Submits to `/`... aka getServerSideProps then
@@ -229,7 +233,7 @@ const Index: React.FC<Props> = (props) => {
         right: congestionRight,
       },
       obstructed: false,
-      reviewer: reviewer,
+      reviewer: props.labelerID,
       imageID: props.imageID,
     };
 
@@ -303,13 +307,16 @@ const Index: React.FC<Props> = (props) => {
       </Head>
 
       <body>
-        <HeaderBar
-        activePage="home"></HeaderBar>
+        <div className="headerBar">
+          <text className="headText">TrafficNet - Labeling Interface</text>
+          <text className="headLabeler">Labeler: {props.labelerID.toUpperCase()}</text>
+        </div>
+
 
         <div className="sampleGrid">
           <div className="sampleTray">
-            <img src={props.imageContent} alt={props.imageID} />
-            <text className="sampleInfo">Image ID: {props.imageID}</text><br></br>
+            <img className="activeSample" src={props.imageContent} alt={props.imageID} />
+            <text className="sampleID">Image ID: {props.imageID}</text><br></br>
             
           </div>
 
@@ -317,12 +324,11 @@ const Index: React.FC<Props> = (props) => {
             
             <text className="labelHead">Congestion Labels</text><br></br>
               
-            
               <div>
                 <Radios
                   labelTitle="Left Lane"
                   tooltip={tooltipText.congestion.leftLane}
-                  default="vacant"
+                  default="non-congested"
                   options={labelSet.congestion}
                   onChange={(value) => {
                     setCongestLeft(value);
@@ -334,7 +340,7 @@ const Index: React.FC<Props> = (props) => {
               <Radios
                 labelTitle="Center Lane"
                 tooltip={tooltipText.congestion.centerLane}
-                default="vacant"
+                default="non-congested"
                 options={labelSet.congestion}
                 onChange={(value) => {
                   setCongestCenter(value);
@@ -344,7 +350,7 @@ const Index: React.FC<Props> = (props) => {
               <Radios
                 labelTitle="Right Lane"
                 tooltip={tooltipText.congestion.rightLane}
-                default="vacant"
+                default="non-congested"
                 options={labelSet.congestion}
                 onChange={(value) => {
                   setCongestRight(value);
@@ -363,15 +369,7 @@ const Index: React.FC<Props> = (props) => {
               }}
             ></Radios>
 
-            <Radios
-              labelTitle="Reviewer"
-              tooltip={tooltipText.reviewer}
-              default=""
-              options={labelSet.reviewer}
-              onChange={(value) => {
-                setReviewer(value);
-              }}
-            ></Radios>
+
 
             <div className="navigationButtons">
               <LightTooltip title={tooltipText.submit}>

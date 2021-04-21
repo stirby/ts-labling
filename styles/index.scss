@@ -12,7 +12,7 @@ text {
   color: #eff9fb;
 }
 
-.headerGrid {
+.headerBar {
   display: grid;
   justify-content: center;
   grid-template-columns: 60vw 30vw;
@@ -22,13 +22,13 @@ text {
   background-color: #3c5a68;
 }
 
-.navBox {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: 30% 30% 30%;
-  grid-gap: 5%;
-
-  text-align: center;
+.headLabeler {  
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  font-size: xx-large;
+  color: #eff9fb;
+  display: inline-block;
+  padding-top: 20px;
 }
 
 
@@ -52,15 +52,6 @@ text {
   padding-left: auto;
   padding-right: auto;
   text-decoration: none;
-}
-
-.nav:hover {
-  color: #b5f1fd;
-}
-
-.activePage {
-  font-weight: 700;
-  text-decoration: underline;
 }
 
 .labelHead {
@@ -105,6 +96,14 @@ text {
   position: relative;
 }
 
+.sampleID {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: large;
+  color: #eff9fb;
+  display: inline-block;
+}
+
 .radioBox {
   display: block;
   margin-left: auto;
@@ -136,7 +135,6 @@ text {
 }
 
 .sampleGrid > .sampleTray {
-  background-color: #eff9fb;
   padding: 10px;
   display: inline-block;
   max-height: fit-content;
@@ -147,6 +145,7 @@ text {
   background-color: #eff9fb;
   padding: 20px;
 }
+
 
 .navigationButtons {
   position: absolute;
