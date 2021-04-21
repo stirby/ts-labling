@@ -8,8 +8,6 @@ import * as BoxSDK from "box-node-sdk";
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 
-// Local Components
-import HeaderBar from '../components/HeaderBar';
 
 // Cookie reading
 import Cookies from "universal-cookie"
