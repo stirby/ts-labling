@@ -3,14 +3,12 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { MongoClient } from "mongodb";
 import * as BoxSDK from "box-node-sdk";
+import Cookies from "universal-cookie"
 
 // From Material UI
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 
-
-// Cookie reading
-import Cookies from "universal-cookie"
 
 interface Props {
   imageID: string;
@@ -296,13 +294,13 @@ const Index: React.FC<Props> = (props) => {
       </Head>
 
       <body>
-        <div className="headerBar">
+        <div className="fullGrid headerBar">
           <text className="headText">TrafficNet - Labeling Interface</text>
           <text className="headLabeler">Labeler: {props.labelerID.toUpperCase()}</text>
         </div>
 
 
-        <div className="sampleGrid">
+        <div className="fullGrid sampleGrid">
           <div className="sampleTray">
             <img className="activeSample" src={props.imageContent} alt={props.imageID} />
             <text className="sampleID">Image ID: {props.imageID}</text><br></br>

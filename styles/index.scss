@@ -12,11 +12,22 @@ text {
   color: #eff9fb;
 }
 
-.headerBar {
+.test_a {
+  color: #e9806e;
+}
+
+.test_b {
+  font-size: xx-large;
+}
+
+.fullGrid {
   display: grid;
   justify-content: center;
   grid-template-columns: 60vw 30vw;
   grid-gap: 5vw;
+}
+
+.headerBar {
   width: 100vw;
   height: 80px;
   background-color: #3c5a68;
@@ -82,18 +93,16 @@ text {
 }
 
 .sampleGrid {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: 60vw 30vw;
   grid-template-rows: 80vh;
   width: 100vw;
   height: 100vh;
-  grid-gap: 5vw;
   background-color: #3c5a68;
 }
 
 .labels {
   position: relative;
+  background-color: #eff9fb;
+  padding: 20px;
 }
 
 .sampleID {
@@ -104,35 +113,7 @@ text {
   display: inline-block;
 }
 
-.radioBox {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 95%;
-  height: 80px;
-  border-bottom: 1px solid #598397;
-}
 
-.radioTitle {
-  color: #3c5a68;
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-  font-size: x-large;
-  position: relative;
-  top: 30px;
-  float: left;
-}
-
-.radioOpt {
-  color: #3c5a68;
-  font-family: "Open Sans", sans-serif;
-  font-weight: 500;
-  font-size: x-large;
-  position: relative;
-  float: right;
-  margin-top: 30px;
-  margin-left: 10px;
-}
 
 .sampleGrid > .sampleTray {
   padding: 10px;
@@ -141,12 +122,8 @@ text {
   max-width: fit-content;
 }
 
-.sampleGrid > .labels {
-  background-color: #eff9fb;
-  padding: 20px;
-}
 
-
+// Action Button Classes
 .navigationButtons {
   position: absolute;
   left: 50%;
@@ -220,6 +197,9 @@ text {
   background-color: #b94e3b;
 }
 
+
+
+// Response Messages
 .err {
   font-family: "Open Sans", sans-serif;
   font-weight: 600;
@@ -243,3 +223,33 @@ text {
 }
 
 
+// Radio Classes
+.radioBox {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  height: 80px;
+  border-bottom: 1px solid #598397;
+}
+
+.radioTitle {
+  color: #3c5a68;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: x-large;
+  position: relative;
+  top: 30px;
+  float: left;
+}
+
+.radioOpt {
+  color: #3c5a68;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: x-large;
+  position: relative;
+  float: right;
+  margin-top: 30px;
+  margin-left: 10px;
+}
