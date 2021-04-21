@@ -14,7 +14,6 @@ import Cookies from "universal-cookie"
 
 interface Props {
   imageID: string;
-  imageName: string;
   imageContent: string;
   labelerID: string;
 }
@@ -39,10 +38,7 @@ const labelSet = {
   congestion: ["unclear", "congested", "non-congested"],
 
   // Precipitation artifact, fog can be general only one may be selected. 
-  precipitation: ["rain", "snow", "fog", "clear"],
-
-  // Placeholder, needs to be text input that doesn't refresh for the client on submission
-  reviewer: ["DCSL", "ALDOT"]
+  precipitation: ["rain", "snow", "fog", "clear"]
 }
 
 // Tooltips for each label selection
@@ -95,7 +91,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const emptyResponse = {
       props: {
         imageID: "",
-        imageName: "",
         imageContent: "",
         labelerID: ""
       },
@@ -169,7 +164,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   // Pre-define sample image data
   var imgProps = {
     imageID: "",
-    imageName: "",
     imageContent: "data:image/jpeg;base64, ", // Initialize with expected format for html to decode base64
     labelerID: labelerID
   };
@@ -181,7 +175,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
   // Set box id
   imgProps.imageID = result[0].box_id;
-  imgProps.imageName = result[0].name;
 
   // Get readstream from boxclient
   const stream = await boxClient.files.getReadStream(imgProps.imageID);
