@@ -22,8 +22,11 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
+  console.log(">> COOKIES recieved: ", cookies)
+
+
   let password = cookies.get(cookieName) 
-  console.log(">> COOKIE recieved: ", password)
+  
 
   const auth = appContext.ctx.req?.headers.authorization;
   if (auth) {
