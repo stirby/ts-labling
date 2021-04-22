@@ -13,6 +13,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   // Valid password 
   const passkey = process.env.PASSKEY;
+  console.log("Current Passkey: ", passkey?.substring(0, 4))
+
 
   // Valid usernames
   const usernames = ["aldot", "dcsl"];
@@ -22,10 +24,14 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   // Get auth from http header
   const auth = appContext.ctx.req?.headers.authorization;
+  console.log(">> auth recieved: ", auth)
+
 
   // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
   let password = cookies.get(cookieName) 
+  console.log(">> COOKIE recieved: ", password)
+
 
   if (auth) {
     
