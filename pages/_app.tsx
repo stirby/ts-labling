@@ -32,6 +32,9 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     // Parse b64
     const login = Buffer.from(auth.split(" ")[1], "base64").toString("utf-8")
     
+
+    console.log(">> login string recieved: ", login)
+
     // Split username and password
     const [uname, pass] = login.split(":");
 
