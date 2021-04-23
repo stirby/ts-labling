@@ -22,21 +22,18 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
-  console.log(">> COOKIES recieved: ", cookies)
 
 
   let password = cookies.get(cookieName) 
   
 
+
   const auth = appContext.ctx.req?.headers.authorization;
+
   if (auth) {
-    console.log(">> auth recieved: ", auth)
 
     // Parse b64
     const login = Buffer.from(auth.split(" ")[1], "base64").toString("utf-8")
-    
-
-    console.log(">> login string recieved: ", login)
 
     // Split username and password
     const [uname, pass] = login.split(":");

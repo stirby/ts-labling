@@ -154,15 +154,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   ).getAppAuthClient("user", process.env.BOX_USERKEY);
   console.log("- Box: Authenticated Client.");
 
-  const cookies = new Cookies(ctx.req?.headers.cookie)
-  const labelerID = cookies.get("authCookie").split("-")[1]
 
   // Pre-define sample image data
   var imgProps = {
     imageID: "",
     imageContent: "data:image/jpeg;base64, ", // Initialize with expected format for html to decode base64
-    labelerID: labelerID
+    labelerID: "undefined"
   };
+
+  // Verify Auth cookie
+  const cookies = new Cookies(ctx.req?.headers.cookie)
+  const authCookie = cookies.get("authCookie"); 
+  console.log(authCookie)
+  if (authCookie) {
+    imgProps.labelerID = authCookie.split("-")[1]
+  }
 
   // Pull random sample from mongoDB
   const result = await collection
@@ -446,7 +452,6 @@ const Radios: React.FC<{
 };
 
 /* From Google's Material UI: https://material-ui.com/components/tooltips/
-*
 *
 */
 const LightTooltip = withStyles((theme) => ({
