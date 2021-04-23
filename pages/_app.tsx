@@ -22,11 +22,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
-
-
   let password = cookies.get(cookieName) 
-  
-
 
   const auth = appContext.ctx.req?.headers.authorization;
 
@@ -37,7 +33,6 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
     // Split username and password
     const [uname, pass] = login.split(":");
-
     
     if (pass === passkey && usernames.includes(uname.toLowerCase())) {
       let completeCookie = cookieName+"="+passkey+"-"+uname;
