@@ -16,7 +16,7 @@ text {
   display: grid;
   justify-content: center;
   grid-template-columns: 60vw 30vw;
-  grid-gap: 5vw;
+  grid-gap: 2vw;
 }
 
 .headerBar {
@@ -25,55 +25,31 @@ text {
   background-color: #3c5a68;
 }
 
-.headLabeler {  
+.headerFont {
   font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: xx-large;
+}
+
+.labeler {  
   font-weight: 600;
-  font-size: xx-large;
   color: #eff9fb;
   display: inline-block;
   padding-top: 20px;
 }
 
 
-.headText {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-  font-size: xx-large;
+.title {
   color: #eff9fb;
   display: inline-block;
   padding-top: 20px;
 }
 
-
-.nav {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-  font-size: xx-large;
-  color: #eff9fb;
-  display: inline-block;
-  padding-top: 20px;
-  padding-left: auto;
-  padding-right: auto;
-  text-decoration: none;
-}
 
 .labelHead {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-  font-size: xx-large;
   color: #3c5a68;
 }
 
-.sampleInfo {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-  font-size: xx-large;
-  color: #3c5a68;
-
-  position: relative;
-  bottom: -20px;
-  left: 0px;
-}
 
 .sampleTray > img {
   margin: auto;
@@ -126,12 +102,15 @@ text {
   height: 180px;
 }
 
-.submitChoice {
-  background-color: #70ae6e;
+.buttonFont {
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
   font-size: large;
   color: #eff9fb;
+}
+
+.submitChoice {
+  background-color: #70ae6e;
 
   position: absolute;
   top: 30px;
@@ -150,10 +129,7 @@ text {
 .skipChoice {
   background-color: #CF995F;
 
-  font-family: "Open Sans", sans-serif;
-  font-weight: 500;
-  font-size: large;
-  color: #eff9fb;
+
 
   position: absolute;
   top: 30px;
@@ -169,14 +145,8 @@ text {
 }
 
 .obstructed {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 400;
-  font-size: x-large;
   background-color: #e9806e;
-  font-weight: 500;
-  font-size: large;
-  color: #eff9fb;
-  
+
   position: absolute;
   bottom: 20px;
   
@@ -220,8 +190,8 @@ text {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 95%;
-  height: 80px;
+  width: 98%;
+  height: 60px;
   border-bottom: 1px solid #598397;
 }
 
@@ -229,7 +199,7 @@ text {
   color: #3c5a68;
   font-family: "Open Sans", sans-serif;
   font-weight: 300;
-  font-size: x-large;
+  font-size: large;
   position: relative;
   top: 30px;
   float: left;
@@ -239,9 +209,34 @@ text {
   color: #3c5a68;
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
-  font-size: x-large;
+  font-size: medium;
   position: relative;
   float: right;
   margin-top: 30px;
-  margin-left: 10px;
+}
+
+
+// FOR EXAMPLES PAGE
+.imgGrid {
+  background-color: #3c5a68;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 40vw 40vw;
+  grid-template-rows: 30vw 30vw 30vw;
+  grid-gap: 10vw;
+}
+
+.imgGrid > div {
+  padding: 5px;
+}
+
+.imgGrid > div > img {
+  max-width: 100%; 
+}
+
+.imgGrid > div > text {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-size: xx-large;
+  color: #eff9fb;
 }

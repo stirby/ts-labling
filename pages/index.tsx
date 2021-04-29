@@ -301,8 +301,8 @@ const Index: React.FC<Props> = (props) => {
 
       <body>
         <div className="fullGrid headerBar">
-          <text className="headText">TrafficNet - Labeling Interface</text>
-          <text className="headLabeler">Labeler: {props.labelerID.toUpperCase()}</text>
+          <text className="headerFont title">TrafficNet - Labeling Interface</text>
+          <text className="headerFont labeler">Labeler: {props.labelerID.toUpperCase()}</text>
         </div>
 
 
@@ -315,7 +315,7 @@ const Index: React.FC<Props> = (props) => {
 
           <div className="labels">
             
-            <text className="labelHead">Congestion Labels</text><br></br>
+            <text className="headerFont labelHead">Congestion Labels</text><br></br>
               
               <div>
                 <Radios
@@ -351,7 +351,7 @@ const Index: React.FC<Props> = (props) => {
               ></Radios>
 
             <br></br>
-            <text className="labelHead">Enviroment Labels</text><br></br>
+            <text className="headerFont labelHead">Enviroment Labels</text><br></br>
             <Radios
               labelTitle="Precipitation"
               tooltip={tooltipText.precipitation}
@@ -367,7 +367,7 @@ const Index: React.FC<Props> = (props) => {
             <div className="navigationButtons">
               <LightTooltip title={tooltipText.submit}>
               <button
-                className="submitChoice"
+                className="buttonFont submitChoice"
                 disabled={submitting}
                 onClick={submit}
               >
@@ -376,13 +376,13 @@ const Index: React.FC<Props> = (props) => {
               </LightTooltip>
 
               <LightTooltip title={tooltipText.submit}>
-              <button className="skipChoice" disabled={submitting} onClick={newSample}>
+              <button className="buttonFont skipChoice" disabled={submitting} onClick={newSample}>
                 New Sample
               </button>
               </LightTooltip>
 
               <LightTooltip title={tooltipText.obstructed}>
-              <button className="obstructed" disabled={submitting} onClick={obstructed}>
+              <button className="buttonFont obstructed" disabled={submitting} onClick={obstructed}>
                 Mark Obstructed
               </button>
               </LightTooltip>
