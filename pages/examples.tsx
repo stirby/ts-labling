@@ -20,7 +20,7 @@ const Examples = () => {
         </div>
         <div className="imgGrid">
           <div>
-            <text>Lane Congestion Detail</text>
+            <text>Lane Congestion Detail</text>2
             <img src="/obstructed.jpg" alt="Obstructed Example"></img>
           </div>
 

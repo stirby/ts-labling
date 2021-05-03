@@ -56,6 +56,8 @@ const tooltipText = {
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   
+  console.log("TESTING ARR INDEX", labelSet.congestion[2])
+
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
     throw new Error(
@@ -116,6 +118,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     }
 
     // Check for incomplete labels
+    console.log(msg)
     if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
@@ -206,10 +209,10 @@ const Index: React.FC<Props> = (props) => {
 
   //* Label States
   // Holds state for the sample's "has_Cars" label
-  const [precipitation, setPrecip] = React.useState(""),
-        [congestionLeft, setCongestLeft] = React.useState(""),
-        [congestionCenter, setCongestCenter] = React.useState(""),
-        [congestionRight, setCongestRight] = React.useState("");
+  const [precipitation, setPrecip] = React.useState(labelSet.precipitation[3]),
+        [congestionLeft, setCongestLeft] = React.useState(labelSet.congestion[2]),
+        [congestionCenter, setCongestCenter] = React.useState(labelSet.congestion[2]),
+        [congestionRight, setCongestRight] = React.useState(labelSet.congestion[2]);
         
 
   // Submits to `/`... aka getServerSideProps then
