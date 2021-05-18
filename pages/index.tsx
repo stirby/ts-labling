@@ -108,7 +108,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       await collection.findOneAndUpdate(
         { box_id: msg.imageID },
         {
-          $set: { obstructed: true },
+          $set: { reviewer: msg.reviewer,
+                  obstructed: true },
         },
         { upsert: false }
       );
@@ -378,7 +379,7 @@ const Index: React.FC<Props> = (props) => {
               </button>
               </LightTooltip>
 
-              <LightTooltip title={tooltipText.submit}>
+              <LightTooltip title={tooltipText.newSample}>
               <button className="buttonFont skipChoice" disabled={submitting} onClick={newSample}>
                 New Sample
               </button>
