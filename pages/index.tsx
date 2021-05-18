@@ -49,14 +49,13 @@ const tooltipText = {
   reviewer: "Your workplace, to maintain consistency and accuracy.",
 
   // Button Tooltips
-  obstructed: "Use this to mark images that are unusable for classification, whether the camera is angled in the wrong direction or some obstacle blocks the view. Once clicked, the image will be ’tossed out,’ and a new image will be drawn.",
+  obstructed: "Use this to mark images that are unusable for classification, whether the camera is angled in the wrong direction or some obstacle blocks the view. Once clicked, the image will be ’tossed out,’ and a new image will be drawn. **Please use with caution** - this operation is not feasibly reversable.",
   submit: "Applies all currently selected labels to the active image, saves it to the database, and draws a new image for labeling.",
   newSample: "Simply draws a random image from the database and restores all label options to their default selection."
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   
-  console.log("TESTING ARR INDEX", labelSet.congestion[2])
 
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
@@ -104,6 +103,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const msg: CompleteRequest = JSON.parse(data);
 
     if (msg.obstructed) {
+      console.log(">>> Obstructed Server side.")
       // Sample marked as obstructed, 
       await collection.findOneAndUpdate(
         { box_id: msg.imageID },
@@ -116,10 +116,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       ctx.res.writeHead(200);
       ctx.res.write("Successfully marked sample as obstructed, Thank you.");
       ctx.res.end();
+      return emptyResponse;
     }
 
     // Check for incomplete labels
-    console.log(msg)
     if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
@@ -169,7 +169,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   // Verify Auth cookie
   const cookies = new Cookies(ctx.req?.headers.cookie)
   const authCookie = cookies.get("authCookie"); 
-  console.log(authCookie)
   if (authCookie) {
     imgProps.labelerID = authCookie.split("-")[1]
   }
@@ -280,6 +279,7 @@ const Index: React.FC<Props> = (props) => {
     })
       .then(async (response) => {
         if (response.status === 500) {
+          console.log("Got code 500...")
           setError(await response.text());
           setSubmitting(false);
           return;
