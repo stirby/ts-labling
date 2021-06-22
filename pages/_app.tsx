@@ -11,18 +11,13 @@ function MyApp({ Component, pageProps }) {
 
 MyApp.getInitialProps = async (appContext: AppContext) => {
 
-  // Valid password 
-  const passkey = process.env.PASSKEY;
-
-  // Valid usernames
-  const usernames = ["aldot", "dcsl"];
-
-  // Get Cookie by label
-  const cookieName = "authCookie";
-
-  // Set Cookie with password
   const cookies = new Cookies(appContext.ctx.req?.headers.cookie)
-  let password = cookies.get(cookieName) 
+
+  // Auth Params
+  const authCookieName = "authCookie";
+  const passkey = process.env.PASSKEY;
+  const usernames = ["aldot", "dcsl"];
+  let password = cookies.get(authCookieName) 
 
   const auth = appContext.ctx.req?.headers.authorization;
 
@@ -35,14 +30,13 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     const [uname, pass] = login.split(":");
     
     if (pass === passkey && usernames.includes(uname.toLowerCase())) {
-      let completeCookie = cookieName+"="+passkey+"-"+uname;
+      let completeCookie = authCookieName+"="+passkey+"-"+uname;
       console.log("Saving Cookie:", completeCookie)
       appContext.ctx.res?.setHeader("Set-Cookie", completeCookie)
       password = passkey;
     }
   }
-    
-  
+
   if (password != passkey) {
     appContext.ctx.res?.setHeader("WWW-Authenticate", "basic");
     (appContext.ctx.res as any).statusCode = 401;

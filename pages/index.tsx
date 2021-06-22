@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { MongoClient } from "mongodb";
 import * as BoxSDK from "box-node-sdk";
-import Cookies from "universal-cookie"
+import Cookies from "universal-cookie";
 
 // From Material UI
 import Tooltip from '@material-ui/core/Tooltip';
@@ -14,6 +14,7 @@ interface Props {
   imageID: string;
   imageContent: string;
   labelerID: string;
+  imageLabel: string;
 }
 
 interface CompleteRequest {
@@ -32,7 +33,6 @@ interface CompleteRequest {
 const labelSet = {
   // Applied to north and south selection. Only one may be selected.
   congestion: ["unclear", "congested", "non-congested"],
-
   // Precipitation artifact, fog can be general only one may be selected. 
   precipitation: ["rain", "snow", "fog", "clear"]
 }
@@ -54,9 +54,10 @@ const tooltipText = {
   newSample: "Simply draws a random image from the database and restores all label options to their default selection."
 }
 
+const sortingKey = "sortingMode";
+
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   
-
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
     throw new Error(
@@ -77,9 +78,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     useUnifiedTopology: true,
   });
 
-  const db = client.db(mongoDB);
-  const collection = db.collection("rawData");
-
+  const collection = client.db(mongoDB).collection("rawData");
   console.log("Connected to MongoDB.");
 
   // Labels submitted by user
@@ -89,7 +88,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       props: {
         imageID: "",
         imageContent: "",
-        labelerID: ""
+        imageLabel: "",
+        labelerID: "",
       },
     };
 
@@ -103,7 +103,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const msg: CompleteRequest = JSON.parse(data);
 
     if (msg.obstructed) {
-      console.log(">>> Obstructed Server side.")
       // Sample marked as obstructed, 
       await collection.findOneAndUpdate(
         { box_id: msg.imageID },
@@ -120,7 +119,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     }
 
     // Check for incomplete labels
-    if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "") {
+    if (msg.precipitation === "" ||  msg.congestion.left === "" || msg.congestion.center === "" || msg.congestion.right === "") {
       ctx.res.writeHead(500);
       ctx.res.write(
         "Missing Labels - Please complete before submitting."
@@ -152,34 +151,53 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const boxConfig = JSON.parse(
     Buffer.from(process.env.BOX_CONFIG!, "base64").toString()
   );
-  console.log("- Box: Loaded Client Configuration.");
+  
   const boxClient = await BoxSDK.getPreconfiguredInstance(
     boxConfig
   ).getAppAuthClient("user", process.env.BOX_USERKEY);
-  console.log("- Box: Authenticated Client.");
-
+  
 
   // Pre-define sample image data
   var imgProps = {
     imageID: "",
     imageContent: "data:image/jpeg;base64, ", // Initialize with expected format for html to decode base64
-    labelerID: "undefined"
+    imageLabel: "",
+    labelerID: "undefined",
   };
 
   // Verify Auth cookie
   const cookies = new Cookies(ctx.req?.headers.cookie)
+
   const authCookie = cookies.get("authCookie"); 
   if (authCookie) {
     imgProps.labelerID = authCookie.split("-")[1]
   }
 
-  // Pull random sample from mongoDB
-  const result = await collection
-    .aggregate([{ $match: { reviewer: null } }, { $sample: { size: 1 } }])
-    .toArray();
-
-  // Set box id
-  imgProps.imageID = result[0].box_id;
+  const sortingCookie = cookies.get(sortingKey);
+  if (sortingCookie === "on") {
+    const sortedResult = await collection
+      .find({ 
+        reviewer: { $eq: null },
+        densenetv1_label: { $exists: true }  
+      }, {
+        sort: { densenetv1_label: -1 },
+        limit: 1,
+        projection: { box_id: 1, densenetv1_label: 1}
+      })
+      .toArray();
+    imgProps.imageID = sortedResult[0].box_id;
+    imgProps.imageLabel = ("Image Label: " + sortedResult[0].densenetv1_label.toFixed(3));
+  } else {
+    const staticResult = await collection
+      .find({ 
+        reviewer: { $eq: null } 
+      }, {
+        limit: 1, 
+        projection: { box_id: 1}
+      })
+      .toArray();
+    imgProps.imageID = staticResult[0].box_id;
+  }
 
   // Get readstream from boxclient
   const stream = await boxClient.files.getReadStream(imgProps.imageID);
@@ -207,19 +225,24 @@ const Index: React.FC<Props> = (props) => {
   // Holds state as to whether the client is currently submitting a sample to the server
   const [status, setStatus] = React.useState("");
 
-  //* Label States
   // Holds state for the sample's "has_Cars" label
   const [precipitation, setPrecip] = React.useState(labelSet.precipitation[3]),
         [congestionLeft, setCongestLeft] = React.useState(labelSet.congestion[2]),
         [congestionCenter, setCongestCenter] = React.useState(labelSet.congestion[2]),
         [congestionRight, setCongestRight] = React.useState(labelSet.congestion[2]);
-        
+
+  const [sorting, _] = React.useState(() => {
+    if (typeof window === "undefined") {
+      return false
+    }
+    const cookies = new Cookies(document.cookie);
+    return cookies.get(sortingKey) === "on"
+  });
 
   // Submits to `/`... aka getServerSideProps then
   // routes inside the POST block.
   const submit = () => {
     setSubmitting(true);
-
 
     const request: CompleteRequest = {
       precipitation: precipitation,
@@ -256,7 +279,8 @@ const Index: React.FC<Props> = (props) => {
   };
 
   // Optionally generate a new sample
-  const newSample = () =>{
+  const toggleSort = (sorted: boolean) => {
+    document.cookie = sortingKey + '=' + (sorted ? "off": "on");
     window.location.reload()
   }
 
@@ -313,8 +337,8 @@ const Index: React.FC<Props> = (props) => {
         <div className="fullGrid sampleGrid">
           <div className="sampleTray">
             <img className="activeSample" src={props.imageContent} alt={props.imageID} />
-            <text className="sampleID">Image ID: {props.imageID}</text><br></br>
-            
+            <text className="sampleTag sampleID">Sorting Samples: {sorting.toString()}</text>
+            <text className="sampleTag sampleWeight">{props.imageLabel}</text><br></br>
           </div>
 
           <div className="labels">
@@ -380,8 +404,8 @@ const Index: React.FC<Props> = (props) => {
               </LightTooltip>
 
               <LightTooltip title={tooltipText.newSample}>
-              <button className="buttonFont skipChoice" disabled={submitting} onClick={newSample}>
-                New Sample
+              <button className="buttonFont skipChoice" disabled={submitting} onClick={() => toggleSort(sorting)}>
+                Toggle Sorting 
               </button>
               </LightTooltip>
 
@@ -396,8 +420,6 @@ const Index: React.FC<Props> = (props) => {
           <text className="err">{error}</text>
           <text className="status">{status}</text>
         </div>
-        
-
         
       </body>
     </>

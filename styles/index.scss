@@ -73,14 +73,20 @@ text {
   padding: 20px;
 }
 
-.sampleID {
+.sampleTag {
   font-family: "Open Sans", sans-serif;
   font-weight: 500;
   font-size: large;
   color: #eff9fb;
+}
+
+.sampleID {
   display: inline-block;
 }
 
+.sampleWeight {
+  float: right;
+}
 
 
 .sampleGrid > .sampleTray {
