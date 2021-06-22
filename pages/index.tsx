@@ -51,7 +51,7 @@ const tooltipText = {
   // Button Tooltips
   obstructed: "Use this to mark images that are unusable for classification, whether the camera is angled in the wrong direction or some obstacle blocks the view. Once clicked, the image will be ’tossed out,’ and a new image will be drawn. **Please use with caution** - this operation is not feasibly reversable.",
   submit: "Applies all currently selected labels to the active image, saves it to the database, and draws a new image for labeling.",
-  newSample: "Simply draws a random image from the database and restores all label options to their default selection."
+  toggleSort: "Enables label-aware image querying. When active, returns the highest-weight images with as assigned by the DenseNet model."
 }
 
 const sortingKey = "sortingMode";
@@ -403,7 +403,7 @@ const Index: React.FC<Props> = (props) => {
               </button>
               </LightTooltip>
 
-              <LightTooltip title={tooltipText.newSample}>
+              <LightTooltip title={tooltipText.toggleSort}>
               <button className="buttonFont skipChoice" disabled={submitting} onClick={() => toggleSort(sorting)}>
                 Toggle Sorting 
               </button>
