@@ -133,9 +133,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       { box_id: msg.imageID }, // Query
       { // Label updates
         $set: { reviewer: msg.reviewer, 
-                "labels.congestion.leftLane": msg.congestion.left,
-                "labels.congestion.centerLane": msg.congestion.center, 
-                "labels.congestion.rightLane": msg.congestion.right, 
+                "labels.congestion.left": msg.congestion.left,
+                "labels.congestion.center": msg.congestion.center, 
+                "labels.congestion.right": msg.congestion.right, 
                 "labels.precipitation": msg.precipitation},
       },
       { upsert: false }
