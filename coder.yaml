@@ -12,6 +12,6 @@ template: git-modules
 match: "param:repo=stirby/ts-labeling"
 
 # Uncomment and use 'parameters' to override template defaults
-# parameters:
-#   - name: "region"
-#     value: "us-west-2"
+parameters:
+  - name: "repo"
+    value: "https://github.com/stirby/ts-labling"
