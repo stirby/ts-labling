@@ -13,5 +13,5 @@ match: "param:repo=stirby/ts-labeling"
 
 # Uncomment and use 'parameters' to override template defaults
 parameters:
-  - name: "repo"
+  - name: "Target Github Repo"
     value: "https://github.com/stirby/ts-labling"
