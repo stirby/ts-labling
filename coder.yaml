@@ -4,7 +4,7 @@
 host: dev.coder.com
 
 # Specify the Coder template for this repository
-template: acme-template
+template: git-modules
 
 # Instead of creating a new workspace, you can use a filter to select an existing one. 
 # This approach helps avoid creating multiple workspaces for the same repository.
