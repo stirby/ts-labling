@@ -1,0 +1,17 @@
+# coder.yaml
+
+# Replace with your Coder deployment URL
+host: dev.coder.com
+
+# Specify the Coder template for this repository
+template: acme-template
+
+# Instead of creating a new workspace, you can use a filter to select an existing one. 
+# This approach helps avoid creating multiple workspaces for the same repository.
+# For filtering options, refer to the documentation: https://coder.com/docs/workspaces#workspace-filtering
+match: "param:repo=stirby/ts-labeling"
+
+# Uncomment and use 'parameters' to override template defaults
+# parameters:
+#   - name: "region"
+#     value: "us-west-2"
